@@ -9,13 +9,13 @@ import { isConstructor, isFunction, hasNonInternalSymbols, hasType } from './uti
 import { alignParameters, alignReturnType, alignType } from './utils/type.utils';
 
 // get source and target from run arguments
-const [, , input = 'example.json', output = 'dist/example.d.ts'] = process.argv;
+const [, , input, output] = process.argv;
 
 (async (input: string, output: string) => {
   // parse JSON from provided input path or url
-  const example = input.startsWith('http')
-    ? (await fetch(input)).json()
-    : JSON.parse(await readFile(input, 'utf8'));
+  const data = input.startsWith('http')
+    ? await (await fetch(input, { method: 'GET', redirect: 'follow' })).json()
+    : await JSON.parse(await readFile(input, 'utf8'));
 
   // https://github.com/prettier/prettier/issues/265
   const renderComments = (docs: any, symbol: string): string => {
@@ -72,15 +72,15 @@ const [, , input = 'example.json', output = 'dist/example.d.ts'] = process.argv;
     return `
     ${renderComments(docs, symbol)}
     class ${symbol} {
-      ${Object.keys(example[symbol])
+      ${Object.keys(data[symbol])
         .filter(key => !key.startsWith('!'))
-        .filter(key => hasType(example[symbol], key))
-        .map(key => renderType(example[symbol], key, true, true))
+        .filter(key => hasType(data[symbol], key))
+        .map(key => renderType(data[symbol], key, true, true))
         .join('')}
-      ${Object.keys(example['!define'][symbol])
+      ${Object.keys(data['!define'][symbol])
         .filter(key => !key.startsWith('!'))
-        .filter(key => hasType(example['!define'][symbol], key))
-        .map(key => renderType(example['!define'][symbol], key, true, false))
+        .filter(key => hasType(data['!define'][symbol], key))
+        .map(key => renderType(data['!define'][symbol], key, true, false))
         .join('')}
     }
   `;
@@ -90,10 +90,10 @@ const [, , input = 'example.json', output = 'dist/example.d.ts'] = process.argv;
     return `
     ${renderComments(docs, symbol)}
     abstract class ${symbol} {
-      ${Object.keys(example['!define'][symbol])
+      ${Object.keys(data['!define'][symbol])
         .filter(key => !key.startsWith('!'))
-        .filter(key => hasType(example['!define'][symbol], key))
-        .map(key => renderType(example['!define'][symbol], key, true, false))
+        .filter(key => hasType(data['!define'][symbol], key))
+        .map(key => renderType(data['!define'][symbol], key, true, false))
         .join('')}
     }
   `;
@@ -118,9 +118,9 @@ const [, , input = 'example.json', output = 'dist/example.d.ts'] = process.argv;
 export {};
 
 declare global {
-  ${Object.keys(example)
+  ${Object.keys(data)
     .filter(key => !key.startsWith('!'))
-    .map(key => renderSymbol(example, key))
+    .map(key => renderSymbol(data, key))
     .join('')}
 }
 `;
@@ -131,7 +131,7 @@ declare global {
   const formatted = prettier.format(result, { ...options, filepath: output });
 
   // prepare folder(s)
-  if (!existsSync(dir)) {
+  if (dir !== '' && !existsSync(dir)) {
     await mkdir(dir, { recursive: true });
   }
 
