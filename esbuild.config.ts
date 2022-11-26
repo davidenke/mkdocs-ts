@@ -5,11 +5,11 @@ const isWatchMode = process.argv.includes('--watch');
 
 build({
   entryPoints: ['./src/generator.ts'],
-  bundle: false,
+  bundle: true,
   platform: 'node',
   format: 'cjs',
   outfile: './dist/generator.js',
-  // minify: !isWatchMode,
+  minify: !isWatchMode,
   sourcemap: isWatchMode,
   watch: isWatchMode,
   plugins: [clean({ patterns: ['./dist'] })]
