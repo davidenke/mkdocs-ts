@@ -58,8 +58,10 @@ const [, , input, output] = process.argv;
     return `
   ${renderComments(docs, symbol)}
   ${isStatic ? 'static ' : ''}${!isMember ? `function ` : ''}${
-      isConstructor(docs[symbol]['!type'], symbol) ? 'new' : symbol
-    }(${alignParameters(docs[symbol]['!type'])}): ${alignReturnType(docs[symbol]['!type'])};
+      isConstructor(docs[symbol]['!type'], symbol) ? 'constructor' : symbol
+    }(${alignParameters(docs[symbol]['!type'])})${
+      !isConstructor ? `: ${alignReturnType(docs[symbol]['!type'])}` : ''
+    };
   `;
   };
 
