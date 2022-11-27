@@ -14,6 +14,7 @@ build({
   sourcemap: isWatchMode,
   watch: isWatchMode,
   external: Object.keys(dependencies),
+  logLevel: 'info',
   plugins: [clean({ patterns: ['./dist'] })]
 })
   .then(() => !isWatchMode && process.exit(0))
