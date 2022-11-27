@@ -38,12 +38,12 @@ const [, , input, output] = process.argv;
   const renderSimpleType = (
     docs: any,
     symbol: string,
-    isMember = false,
+    isProperty = false,
     isStatic = false
   ): string => {
     return `
   ${renderComments(docs, symbol)}
-  ${isStatic ? 'static ' : ''}${!isMember ? 'const ' : ''}${symbol}: ${alignType(
+  ${isStatic ? 'static ' : ''}${!isProperty ? 'const ' : ''}${symbol}: ${alignType(
       docs[symbol]['!type']
     )};
   `;
@@ -52,24 +52,25 @@ const [, , input, output] = process.argv;
   const renderFunctionType = (
     docs: any,
     symbol: string,
-    isMember = false,
+    isProperty = false,
     isStatic = false
   ): string => {
+    const isNew = isConstructor(docs[symbol]['!type'], symbol);
     return `
   ${renderComments(docs, symbol)}
-  ${isStatic ? 'static ' : ''}${!isMember ? `function ` : ''}${
-      isConstructor(docs[symbol]['!type'], symbol) ? 'constructor' : symbol
+  ${isStatic ? 'static ' : ''}${!isProperty ? `function ` : ''}${
+      isNew ? 'constructor' : symbol
     }(${alignParameters(docs[symbol]['!type'])})${
-      !isConstructor ? `: ${alignReturnType(docs[symbol]['!type'])}` : ''
+      !isNew ? `: ${alignReturnType(docs[symbol]['!type'])}` : ''
     };
   `;
   };
 
-  const renderType = (docs: any, symbol: string, isMember = false, isStatic = false): string => {
+  const renderType = (docs: any, symbol: string, isProperty = false, isStatic = false): string => {
     if (isFunction(docs[symbol]['!type'])) {
-      return renderFunctionType(docs, symbol, isMember, isStatic);
+      return renderFunctionType(docs, symbol, isProperty, isStatic);
     }
-    return renderSimpleType(docs, symbol, isMember, isStatic);
+    return renderSimpleType(docs, symbol, isProperty, isStatic);
   };
 
   const renderClass = (docs: any, symbol: string): string => {
