@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { existsSync } from 'fs';
 import { mkdir, readFile, writeFile } from 'fs/promises';
 import { parse } from 'path';
