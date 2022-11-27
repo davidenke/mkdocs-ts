@@ -10,7 +10,7 @@ build({
   platform: 'node',
   format: 'cjs',
   outfile: './dist/generator.js',
-  minify: !isWatchMode,
+  // minify: !isWatchMode,
   sourcemap: isWatchMode,
   watch: isWatchMode,
   external: Object.keys(dependencies),
