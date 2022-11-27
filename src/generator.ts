@@ -79,6 +79,7 @@ const [, , input, output] = process.argv;
         .filter(key => hasType(data[symbol], key))
         .map(key => renderType(data[symbol], key, true, true))
         .join('')}
+      ${hasType(docs, symbol) && renderFunctionType(data, symbol, true, false)}
       ${Object.keys(data['!define'][symbol])
         .filter(key => !key.startsWith('!'))
         .filter(key => hasType(data['!define'][symbol], key))
