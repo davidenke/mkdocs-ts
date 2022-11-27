@@ -89,10 +89,10 @@ const [, , input, output] = process.argv;
   `;
   };
 
-  const renderAbstractClass = (docs: any, symbol: string): string => {
+  const renderConst = (docs: any, symbol: string): string => {
     return `
     ${renderComments(docs, symbol)}
-    abstract class ${symbol} {
+    const ${symbol}: {
       ${Object.keys(data['!define'][symbol])
         .filter(key => !key.startsWith('!'))
         .filter(key => hasType(data['!define'][symbol], key))
@@ -111,7 +111,7 @@ const [, , input, output] = process.argv;
     }
 
     if (!hasType(docs, symbol) && !hasStaticMembers) {
-      return renderAbstractClass(docs, symbol);
+      return renderConst(docs, symbol);
     }
 
     return renderType(docs, symbol);
