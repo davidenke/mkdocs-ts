@@ -28,6 +28,8 @@ jobs:
         with:
           node-version: 18.12.1
           registry-url: https://registry.npmjs.org/
+      - run: git config user.email "david@enke.dev"
+      - run: git config user.name "David Enke"
       - run: npm ci
       - run: npm run release
         env:
