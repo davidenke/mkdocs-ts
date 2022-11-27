@@ -1,6 +1,6 @@
 {
   "name": "@davidenke/mkdocs-ts",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "MkDocs to Typescript converter",
   "author": {
     "email": "david@enke.dev",
