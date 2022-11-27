@@ -57,13 +57,11 @@ const [, , input, output] = process.argv;
   ): string => {
     const isNew = isConstructor(docs[symbol]['!type'], symbol);
     return `
-  ${renderComments(docs, symbol)}
-  ${isStatic ? 'static ' : ''}${!isProperty ? `function ` : ''}${
-      isNew ? 'constructor' : symbol
-    }(${alignParameters(docs[symbol]['!type'])})${
-      !isNew ? `: ${alignReturnType(docs[symbol]['!type'])}` : ''
-    };
-  `;
+      ${renderComments(docs, symbol)}
+      ${isStatic ? 'static ' : ''}${!isProperty ? 'function ' : ''}
+      ${isNew ? 'constructor' : symbol}(${alignParameters(docs[symbol]['!type'])})
+      ${!isNew ? `: ${alignReturnType(docs[symbol]['!type'])}` : ''};
+    `;
   };
 
   const renderType = (docs: any, symbol: string, isProperty = false, isStatic = false): string => {
@@ -73,36 +71,31 @@ const [, , input, output] = process.argv;
     return renderSimpleType(docs, symbol, isProperty, isStatic);
   };
 
-  const renderClass = (docs: any, symbol: string): string => {
+  const renderComplexType = (docs: any, symbol: string, type: 'class' | 'interface'): string => {
     return `
-    ${renderComments(docs, symbol)}
-    class ${symbol} {
-      ${Object.keys(data[symbol])
-        .filter(key => !key.startsWith('!'))
-        .filter(key => hasType(data[symbol], key))
-        .map(key => renderType(data[symbol], key, true, true))
-        .join('')}
-      ${hasType(docs, symbol) ? renderFunctionType(data, symbol, true, false) : ''}
-      ${Object.keys(data['!define'][symbol])
-        .filter(key => !key.startsWith('!'))
-        .filter(key => hasType(data['!define'][symbol], key))
-        .map(key => renderType(data['!define'][symbol], key, true, false))
-        .join('')}
-    }
-  `;
+      ${renderComments(docs, symbol)}
+      ${type} ${symbol} {
+        ${Object.keys(data[symbol])
+          .filter(key => !key.startsWith('!'))
+          .filter(key => hasType(data[symbol], key))
+          .map(key => renderType(data[symbol], key, true, type === 'class'))
+          .join('')}
+        ${hasType(docs, symbol) ? renderFunctionType(data, symbol, true, false) : ''}
+        ${Object.keys(data['!define'][symbol])
+          .filter(key => !key.startsWith('!'))
+          .filter(key => hasType(data['!define'][symbol], key))
+          .map(key => renderType(data['!define'][symbol], key, true, false))
+          .join('')}
+      }
+    `;
   };
 
-  const renderConst = (docs: any, symbol: string): string => {
-    return `
-    ${renderComments(docs, symbol)}
-    const ${symbol}: {
-      ${Object.keys(data['!define'][symbol])
-        .filter(key => !key.startsWith('!'))
-        .filter(key => hasType(data['!define'][symbol], key))
-        .map(key => renderType(data['!define'][symbol], key, true, false))
-        .join('')}
-    }
-  `;
+  const renderClass = (docs: any, symbol: string): string => {
+    return renderComplexType(docs, symbol, 'class');
+  };
+
+  const renderInterface = (docs: any, symbol: string): string => {
+    return renderComplexType(docs, symbol, 'interface');
   };
 
   const renderSymbol = (docs: any, symbol: string): string => {
@@ -114,7 +107,11 @@ const [, , input, output] = process.argv;
     }
 
     if (!hasType(docs, symbol) && !hasStaticMembers) {
-      return renderConst(docs, symbol);
+      return `
+        ${renderInterface(docs, symbol)}
+        // provide gloabl implementation of the interface with the same name
+        const ${symbol}: ${symbol};
+      `;
     }
 
     return renderType(docs, symbol);
