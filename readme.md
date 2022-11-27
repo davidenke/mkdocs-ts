@@ -15,10 +15,26 @@ Some missing things that would be nice once another sleepless night comes around
 
 ## Installation
 
-From GitHub for the time being:
+```bash
+npm i -D @davidenke/mkdocs-ts
+```
+
+or
 
 ```bash
-npm install davidenke/mkdocs-ts
+npm install --save-dev @davidenke/mkdocs-ts
+```
+
+or
+
+```bash
+pnpm install --dev @davidenke/mkdocs-ts
+```
+
+or
+
+```bash
+yarn add --dev @davidenke/mkdocs-ts
 ```
 
 ## Usage
