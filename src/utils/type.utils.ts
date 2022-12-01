@@ -29,7 +29,7 @@ export const alignParameters = (fnType: string): string => {
     .split(/\s?,\s?/)
     .map((arg: string, index: number) => {
       if (!arg.includes(':') || arg.startsWith('{')) {
-        return `val${index}: ${alignType(arg)}`;
+        return `arg${index}: ${alignType(arg)}`;
       }
       const [name, type] = arg.split(/\s?:\s?/);
       return `${name}: ${alignType(type)}`;
